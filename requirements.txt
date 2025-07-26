@@ -1,0 +1,13 @@
+# Core ML libraries
+scikit-learn
+pandas
+numpy
+
+# Model serialization
+joblib
+
+
+fastapi
+pydantic
+
+uvicorn
