@@ -55,11 +55,25 @@ jobs:
 
       - name: Setup Workload Identity
         run: |
-          # Create Kubernetes service account if it doesn't exist
-          kubectl create serviceaccount telemetry-access --namespace default --dry-run=client -o yaml | kubectl apply -f -
-          
           # Get project ID
           PROJECT_ID=$(gcloud config get-value project)
+          
+          # Create Google Cloud service account if it doesn't exist
+          gcloud iam service-accounts create telemetry-access \
+            --display-name "Access for GKE ML service" \
+            --description "Service account for telemetry access" || true
+          
+          # Add logging and tracing permissions
+          gcloud projects add-iam-policy-binding $PROJECT_ID \
+            --member="serviceAccount:telemetry-access@$PROJECT_ID.iam.gserviceaccount.com" \
+            --role="roles/logging.logWriter" || true
+          
+          gcloud projects add-iam-policy-binding $PROJECT_ID \
+            --member="serviceAccount:telemetry-access@$PROJECT_ID.iam.gserviceaccount.com" \
+            --role="roles/cloudtrace.agent" || true
+          
+          # Create Kubernetes service account if it doesn't exist
+          kubectl create serviceaccount telemetry-access --namespace default --dry-run=client -o yaml | kubectl apply -f -
           
           # Annotate service account for Workload Identity
           kubectl annotate serviceaccount telemetry-access \
