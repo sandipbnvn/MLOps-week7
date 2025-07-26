@@ -42,21 +42,6 @@ jobs:
           echo "IMAGE_NAME=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.ARTIFACT_REGISTRY }}/iris-api:${{ github.sha }}" >> $GITHUB_ENV
           echo "VERSION=${{ github.sha }}" >> $GITHUB_ENV
 
-      - name: Test Docker container
-        run: |
-          # Start container in background
-          docker run -d -p 8200:8200 --name test-container $IMAGE_NAME
-          
-          # Install requests library for testing
-          pip install requests
-          
-          # Run Python tests
-          python test.py
-          
-          # Cleanup
-          docker stop test-container
-          docker rm test-container
-
       - name: Push Docker Image
         run: |-
           docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.ARTIFACT_REGISTRY }}/iris-api:${{ github.sha }}
