@@ -33,16 +33,16 @@ spec:
             cpu: "200m"
         livenessProbe:
           httpGet:
-            path: /health
+            path: /live_check
             port: 8200
-          initialDelaySeconds: 30
-          periodSeconds: 10
+          initialDelaySeconds: 15
+          periodSeconds: 20
         readinessProbe:
           httpGet:
-            path: /health
+            path: /ready_check
             port: 8200
           initialDelaySeconds: 5
-          periodSeconds: 5
+          periodSeconds: 10
 ---
 apiVersion: v1
 kind: Service

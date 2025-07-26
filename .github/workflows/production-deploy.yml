@@ -82,6 +82,14 @@ jobs:
           # Wait for rollout to complete
           kubectl rollout status deployment/demo-iris-workload-prd -n default --timeout=300s
 
+      - name: Deploy HPA
+        run: |
+          # Apply the HPA manifest
+          kubectl apply -f k8s/production-hpa.yaml
+          
+          # Verify HPA is created
+          kubectl get hpa -n default
+
       - name: Notify success
         if: success()
         run: |
