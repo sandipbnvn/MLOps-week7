@@ -53,6 +53,25 @@ jobs:
           cluster_name: demo-gke-iris-cluster-prd2
           location: us-central1
 
+      - name: Setup Workload Identity
+        run: |
+          # Create Kubernetes service account if it doesn't exist
+          kubectl create serviceaccount telemetry-access --namespace default --dry-run=client -o yaml | kubectl apply -f -
+          
+          # Get project ID
+          PROJECT_ID=$(gcloud config get-value project)
+          
+          # Annotate service account for Workload Identity
+          kubectl annotate serviceaccount telemetry-access \
+            --namespace default \
+            iam.gke.io/gcp-service-account=telemetry-access@$PROJECT_ID.iam.gserviceaccount.com --overwrite
+          
+          # Bind IAM policy for Workload Identity
+          gcloud iam service-accounts add-iam-policy-binding telemetry-access@$PROJECT_ID.iam.gserviceaccount.com \
+            --role roles/iam.workloadIdentityUser \
+            --member "serviceAccount:$PROJECT_ID.svc.id.goog[default/telemetry-access]" \
+            --condition=None
+
       - name: Deploy to Kubernetes
         run: |
           # Update the manifest with the actual image SHA

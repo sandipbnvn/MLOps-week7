@@ -18,6 +18,7 @@ spec:
         app: iris-api
         environment: production
     spec:
+      serviceAccountName: telemetry-access
       containers:
       - name: demo-iris-workload-prd
         image: asia-south2-docker.pkg.dev/mlops-may-2025-iitm/my-repo-prd/iris-api:latest
