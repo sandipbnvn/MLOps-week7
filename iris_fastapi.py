@@ -40,7 +40,7 @@ async def startup_event():
 
 @app.get("/")
 def read_root():
-    return {"message": "Welcome to the Iris Classifier API!v4"}
+    return {"message": "Welcome to the Iris Classifier API with autoscaling monitoring v1"}
 
 @app.get("/health")
 def health_check():
